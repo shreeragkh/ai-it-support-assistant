@@ -1,0 +1,33 @@
+# Environment files
+.env
+
+# Virtual environment
+venv/
+env/
+.venv/
+bin/
+lib/
+share/
+include/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Application specific logs
+*.log
+flask_integrated.log
+agent_run.log
+optimized_run.log
+final_verification.log
+
+# Sensitive data
+cookies.txt
+
+# Browser-use temporary files
+todo.md
+.playwright/
+downloads/
+screenshots/
