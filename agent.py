@@ -7,7 +7,16 @@ load_dotenv()
 
 async def run_agent(task_description: str):
     # Configure the browser to be visible so we can "see" what's happening (optional)
-    browser = Browser(headless=True)
+    # Configure the browser for stable operation on EC2
+    browser = Browser(
+        headless=True,
+        args=[
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu"
+        ]
+    )
 
     # Initialize Gemini
     llm = ChatGoogle(
