@@ -20,7 +20,7 @@ async def run_agent(task_description: str):
 
     # Initialize Gemini
     llm = ChatGoogle(
-        model="gemini-2.5-flash",
+        model="gemini-1.5-flash",
         api_key=os.getenv("GEMINI_API_KEY")
     )
 
