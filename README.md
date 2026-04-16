@@ -1,26 +1,29 @@
-# AI-Powered IT Support Agent
+# AI-Powered IT Support Agent (Ultra-Turbo)
 
-An autonomous AI agent designed to automate IT administrative tasks on a mock admin panel using LLM-driven browser navigation.
+An autonomous, high-performance IT support agent designed for rapid administrative task automation. Built with **browser-use** and **Claude 3.5 Haiku**, this agent can navigate complex dashboards, manage users, and handle security tasks with human-like precision but machine-like speed.
 
-## 🚀 Features
+## 🚀 "Ultra-Turbo" Features
 
-- **Autonomous Navigation**: Uses the `browser-use` library to interact with the web interface like a human.
-- **Natural Language Commands**: Carry out complex tasks like "Create user Alice" or "Reset password for Jane" using plain English.
-- **Integrated Command Center**: An AI console built directly into the Admin Dashboard for parallel task execution.
-- **Optimized for Efficiency**: Tuned vision settings and DOM attribute filtering to minimize API costs and improve response times.
-- **Mock IT Admin Panel**: A functional Flask-based dashboard with user directory and administrative actions.
+- **Flash Mode (Zero Latency)**: Reasoning delays have been disabled (`use_thinking=False`) to allow the agent to react to screen states instantly.
+- **Persistent Sessions**: Uses a local `browser_session/` directory to maintain active admin logins. The agent **skips the login screen** entirely on subsequent runs, cutting task time in half.
+- **Smart Pre-Flight Validation**: Automatically validates Name, Email, and Password **before** launching the browser. Aborts and reports errors instantly if data is missing, saving API costs and time.
+- **Duplicate Detection**: Intelligently scans the User Directory before creation to prevent redundant accounts.
+- **Security-First Logic**:
+    - **Modify Password**: Intelligently enters new data into the "Edit" form when asked to reset or change a password.
+    - **Send Link**: Explicitly clicks the table-based "Reset Password" button only when a "link" is specifically requested.
+- **Zero-Wait Execution**: All artificial browser delays have been removed for maximum efficiency.
 
 ## 🛠️ Tech Stack
 
 - **Framework**: Flask (Mock Admin Panel)
-- **AI Agent**: [browser-use](https://docs.browser-use.com/)
-- **LLM**: Google Gemini 2.x (via `langchain-google-genai`)
-- **Automation**: Playwright (Browser steering)
+- **AI Agent**: [browser-use](https://docs.browser-use.com/) (v0.12.6)
+- **LLM**: Anthropic Claude 3.5 Haiku (Optimized for speed)
+- **Automation**: Playwright (Persistent Browser Context)
 
 ## 📋 Prerequisites
 
-- Python 3.9+
-- [Gemini API Key](https://aistudio.google.com/app/apikey)
+- Python 3.13 (or 3.9+)
+- [Anthropic API Key](https://console.anthropic.com/)
 
 ## ⚙️ Setup
 
@@ -30,14 +33,13 @@ An autonomous AI agent designed to automate IT administrative tasks on a mock ad
    cd ai-it-support-agent
    ```
 
-2. **Create a virtual environment**:
+2. **Create and Activate Virtual Environment**:
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Linux/macOS
-   # venv\Scripts\activate  # On Windows
+   source venv/bin/activate  # Linux/macOS
    ```
 
-3. **Install dependencies**:
+3. **Install Dependencies (Version Locked)**:
    ```bash
    pip install -r requirements.txt
    playwright install chromium
@@ -46,37 +48,38 @@ An autonomous AI agent designed to automate IT administrative tasks on a mock ad
 4. **Configure Environment**:
    Create a `.env` file in the root directory:
    ```env
-   GEMINI_API_KEY=your_key_here
+   ANTHROPIC_API_KEY=your_anthropic_key_here
    ```
 
 ## 🖥️ Usage
 
-### 1. Start the Admin Panel
+### 1. Start the Admin Dashboard
 ```bash
 python app.py
 ```
-Wait for the server to start at `http://127.0.0.1:5051`.
+Access the panel at `http://127.0.0.1:5050`.
 
-### 2. Access the Dashboard
-Log in at `http://127.0.0.1:5051/login` with:
+### 2. Admin Credentials (Hint)
 - **Username**: `admin`
 - **Password**: `admin`
 
-### 3. Run AI Tasks
-- **Via the Dashboard**: Use the **AI Command Center** box at the top of the directory to type and run commands.
-- **Via CLI**: In a separate terminal, run:
+### 3. Running AI Commands
+- **Via Dashboard**: Use the **AI Command Center** console at the top of the directory.
+- **Via CLI**: In a separate terminal run:
   ```bash
-  source venv/bin/activate
-  python agent.py "Reset password for John Doe"
+  python agent.py "reset password for Jane Smith to SecretPass123"
   ```
 
 ## 📁 Project Structure
 
-- `app.py`: Flask application server and background task runner.
-- `agent.py`: AI Agent logic and configuration.
-- `templates/`: HTML templates for the dashboard and login.
-- `.env`: (Ignored) Your API credentials.
-- `.gitignore`: Standard exclusions for Python and local data.
+- `agent.py`: Optimized AI Agent logic with Flash Mode and Pre-Flight Validation.
+- `app.py`: Flask dashboard with real-time log polling and report history.
+- `browser_session/`: (Ignored) Local persistent browser data/history.
+- `templates/`: Professional, modern UI layout and dashboard styles.
+
+## 🛡️ Security / .gitignore Tips
+- **Keep `.env` private**: It contains your API credentials.
+- **Ignore `browser_session/`**: This folder contains your active login cookies. **NEVER** push this to GitHub.
 
 ## 🛡️ License
 
