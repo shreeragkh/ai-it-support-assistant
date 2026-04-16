@@ -1,11 +1,10 @@
 # AI-Powered IT Support Agent (Ultra-Turbo)
 
-An autonomous, high-performance IT support agent designed for rapid administrative task automation. Built with **browser-use** and **Claude 3.5 Haiku**, this agent can navigate complex dashboards, manage users, and handle security tasks with human-like precision but machine-like speed.
+An autonomous, high-performance IT support agent designed for rapid administrative task automation. Built with **browser-use** and **claude-haiku-4-5-20251001**, this agent can navigate complex dashboards, manage users, and handle security tasks with human-like precision but machine-like speed.
 
 ## 🚀 "Ultra-Turbo" Features
 
 - **Flash Mode (Zero Latency)**: Reasoning delays have been disabled (`use_thinking=False`) to allow the agent to react to screen states instantly.
-- **Persistent Sessions**: Uses a local `browser_session/` directory to maintain active admin logins. The agent **skips the login screen** entirely on subsequent runs, cutting task time in half.
 - **Smart Pre-Flight Validation**: Automatically validates Name, Email, and Password **before** launching the browser. Aborts and reports errors instantly if data is missing, saving API costs and time.
 - **Duplicate Detection**: Intelligently scans the User Directory before creation to prevent redundant accounts.
 - **Security-First Logic**:
@@ -17,7 +16,7 @@ An autonomous, high-performance IT support agent designed for rapid administrati
 
 - **Framework**: Flask (Mock Admin Panel)
 - **AI Agent**: [browser-use](https://docs.browser-use.com/) (v0.12.6)
-- **LLM**: Anthropic Claude 3.5 Haiku (Optimized for speed)
+- **LLM**: Anthropic claude-haiku-4-5-20251001 (Optimized for speed)
 - **Automation**: Playwright (Persistent Browser Context)
 
 ## 📋 Prerequisites
