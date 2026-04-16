@@ -24,7 +24,6 @@ def validate_user_creation_data(task_description: str):
             missing.append("Password")
             
         # 3. Name Check (Stricter)
-        # We look for a capitalized name or a word after 'called', 'name', 'named' that isn't a keyword
         name_match = False
         keywords = ["create", "user", "called", "name", "named", "with", "password", "email", "pass", "add", "new"]
         words = re.findall(r'\b\w+\b', task_description)
@@ -46,9 +45,7 @@ async def run_agent(task_description: str):
         error_msg = f"ERROR: Missing data! To create a user, I need: {', '.join(missing_fields)}. Please provide them."
         print(f"\n[Validation Failed] {error_msg}")
         try:
-            # Report to Live Console (Red)
             requests.post("http://127.0.0.1:5050/agent/log_step", json={"message": error_msg}, timeout=2)
-            # Report to History (Failed)
             requests.post("http://127.0.0.1:5050/agent/report", json={
                 "task": task_description[:50],
                 "success": False,
@@ -56,7 +53,7 @@ async def run_agent(task_description: str):
             }, timeout=5)
         except:
             pass
-        return # STOP HERE - DO NOT LAUNCH BROWSER
+        return 
 
     # 2. Ultra-Turbo Browser Config (Persistent Session)
     browser = Browser(
@@ -96,13 +93,18 @@ async def run_agent(task_description: str):
                     log_to_dashboard(f"Action: {action_name.replace('_', ' ')}")
         pass
 
-    # Ultra-Turbo Flash Prompt
+    # Ultra-Turbo Flash Prompt (Refined for Password Action Distinction)
+    # Rules added for "Modify" vs "Reset Link"
     strict_task = (
         f"Goal: {task_description}\n\n"
         f"LAZY LOGIN: Go to http://127.0.0.1:5050. If the dashboard is visible, SKIP LOGIN.\n"
-        f"DUPLICATE CHECK: Once on the Dashboard/User Directory, check if a user with the same email already exists in the table.\n"
-        f"  - IF USER EXISTS: STOP IMMEDIATELY and call 'done' with success=False and message 'User already exists'.\n"
-        f"  - IF USER DOES NOT EXIST: Proceed to creation.\n"
+        f"DUPLICATE CHECK (Creation tasks): If creating a user, check if a user with same email exists.\n"
+        f"  - IF EXISTS: STOP IMMEDIATELY and call 'done' with success=False and message 'Another user with same credentials already exists'.\n"
+        f"  - IF NOT EXISTS: Proceed.\n"
+        f"PASSWORD ACTION RULES:\n"
+        f"  - COMMAND INCLUDES 'send' AND 'link' (e.g. 'send password reset link'): Click the 'Reset Password' button in the User Directory table.\n"
+        f"  - COMMAND INCLUDES 'reset' OR 'change' OR 'modify' AND context is data (e.g. 'reset password to 123'): Click 'Edit', enter new password in form, and Update User.\n"
+        f"  - DEFAULT: ALWAYS click 'Edit' to update data unless 'link' is specifically requested.\n"
         f"ONE-STEP: Fill forms and click Save in ONE turn.\n"
         f"STRICT RULES: NEVER use the 'wait' tool. No password bubbles."
     )
@@ -141,7 +143,7 @@ async def run_agent(task_description: str):
             
             if "already exists" in final_msg.lower():
                 success = False
-                message = "Aborted: User already exists."
+                message = "Aborted: Another user with same credentials already exists."
             else:
                 success = True
                 message = "Saved successfully"
