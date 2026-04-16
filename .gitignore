@@ -1,4 +1,4 @@
-# Environment files
+# Environment files (CRITICAL: contain API keys)
 .env
 
 # Virtual environment
@@ -16,18 +16,24 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Application specific logs
-*.log
-flask_integrated.log
-agent_run.log
-optimized_run.log
-final_verification.log
-
-# Sensitive data
+# Browser Data & Sessions (CRITICAL: contain browser profiles/cookies)
+browser_session/
 cookies.txt
-
-# Browser-use temporary files
-todo.md
 .playwright/
+
+# Application Logs
+*.log
+
+# Automation Artifacts
 downloads/
 screenshots/
+todo.md
+scratch/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS specific
+.DS_Store
+Thumbs.db

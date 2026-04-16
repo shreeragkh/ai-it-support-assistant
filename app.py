@@ -22,6 +22,29 @@ users = [
     {"id": "2", "name": "Jane Smith", "email": "jane@company.com", "role": "Manager", "status": "Active"},
 ]
 
+agent_reports = [] # Stores last 5 agent tasks
+active_task_logs = [] # Stores live steps of the CURRENT running task
+
+@app.route('/agent/report', methods=['POST'])
+def agent_report():
+    report = request.json
+    if report:
+        agent_reports.insert(0, report)
+        if len(agent_reports) > 5:
+            agent_reports.pop()
+    return {"status": "ok"}
+
+@app.route('/agent/log_step', methods=['POST'])
+def log_step():
+    data = request.json
+    if data and 'message' in data:
+        active_task_logs.append(data['message'])
+    return {"status": "ok"}
+
+@app.route('/agent/get_logs', methods=['GET'])
+def get_logs():
+    return {"logs": active_task_logs}
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -48,7 +71,7 @@ def logout():
 @app.route('/')
 @login_required
 def dashboard():
-    return render_template('dashboard.html', users=users)
+    return render_template('dashboard.html', users=users, reports=agent_reports)
 
 @app.route('/agent/run', methods=['POST'])
 @login_required
@@ -58,7 +81,9 @@ def run_ai_agent():
         flash("Please enter a query for the agent.", "error")
         return redirect(url_for('dashboard'))
     
-    # Start the agent in a background thread
+    active_task_logs.clear()
+    active_task_logs.append(f"Starting process: {query}")
+
     thread = threading.Thread(target=start_agent_thread, args=(query,))
     thread.daemon = True
     thread.start()
@@ -70,15 +95,28 @@ def run_ai_agent():
 @login_required
 def create_user():
     if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        role = request.form.get('role', 'Employee')
+
+        if not name or not email or not password:
+            flash("All fields (Name, Email, Password) are required.", "error")
+            return render_template('user_form.html')
+
+        if any(u['email'].lower() == email.lower() for u in users):
+            flash(f"Error: A user with email '{email}' already exists.", "error")
+            return render_template('user_form.html')
+
         new_user = {
             "id": str(uuid.uuid4()),
-            "name": request.form['name'],
-            "email": request.form['email'],
-            "role": request.form['role'],
+            "name": name,
+            "email": email,
+            "role": role,
             "status": "Active"
         }
         users.append(new_user)
-        flash(f"User {new_user['name']} created successfully!", "success")
+        flash(f"User {name} created successfully!", "success")
         return redirect(url_for('dashboard'))
     return render_template('user_form.html')
 
@@ -92,5 +130,34 @@ def reset_password(user_id):
         flash("User not found", "error")
     return redirect(url_for('dashboard'))
 
+@app.route('/users/<user_id>/delete', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    global users
+    user = next((u for u in users if u['id'] == user_id), None)
+    if user:
+        users = [u for u in users if u['id'] != user_id]
+        flash(f"User {user['name']} has been deleted.", "success")
+    else:
+        flash("User not found", "error")
+    return redirect(url_for('dashboard'))
+
+@app.route('/users/<user_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_user(user_id):
+    user = next((u for u in users if u['id'] == user_id), None)
+    if not user:
+        flash("User not found", "error")
+        return redirect(url_for('dashboard'))
+    
+    if request.method == 'POST':
+        user['name'] = request.form.get('name')
+        user['email'] = request.form.get('email')
+        user['role'] = request.form.get('role', user['role'])
+        flash(f"User {user['name']} updated successfully!", "success")
+        return redirect(url_for('dashboard'))
+        
+    return render_template('user_edit.html', user=user)
+
 if __name__ == '__main__':
-    app.run(debug=False, port=5051)
+    app.run(debug=False, port=5050)
